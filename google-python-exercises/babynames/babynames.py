@@ -41,8 +41,21 @@ def extract_names(filename):
     followed by the name-rank strings in alphabetical order.
     ['2006', 'Aaliyah 91', Aaron 57', 'Abagail 895', ' ...]
     """
-    # +++your code here+++
-    return
+    file_content = open(filename).read()
+
+    # Finding the year
+    re_year = re.compile(r'Popularity in (.*?)</h')
+    year = re_year.search(file_content).group(1)
+
+    # Creating the name-rank list
+    re_names = re.compile(r'<tr .*?><td>(\d*)</td><td>(\D*?)</td><td>(\D*?)</td>')
+    names_tuples = re_names.findall(file_content)
+    output = [year]
+    for i in names_tuples:
+        output.append(i[1] + ' ' + i[0])
+        output.append(i[2] + ' ' + i[0])
+    output.sort()
+    return output
 
 
 def main():
@@ -65,6 +78,16 @@ def main():
         # For each filename, get the names, then either print the text output
         # or write it to a summary file
 
+        for filename in args:
+            name = filename.split('.')[0] + '.summary'
+            texto = "\n".join(extract_names(filename))
+            f = open(name, mode='w')
+            f.write(texto)
+            f.close()
+    else:
+        for filename in args:
+            texto = "\n".join(extract_names(filename))
+            print(texto)
 
 if __name__ == '__main__':
     main()
